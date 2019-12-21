@@ -267,6 +267,24 @@ fn murmur64(mut h: u64) -> u64 {
     h
 }
 
+const PRIME_1: u64 = 11_400_714_785_074_694_791;
+const PRIME_2: u64 = 14_029_467_366_897_019_727;
+const PRIME_3: u64 = 1_609_587_929_392_839_161;
+const PRIME_4: u64 = 9_650_029_242_287_828_579;
+const PRIME_5: u64 = 2_870_177_450_012_600_261;
+
+fn xx_hash_64(mut v: u64, seed: u64) -> u64 {
+    let mut hash = seed.wrapping_add(PRIME_5);
+    let mut k1 = v.wrapping_mul(PRIME_2);
+    k1 = k1.rotate_left(31);
+    k1 = k1.wrapping_mul(PRIME_1);
+    hash ^= k1;
+    hash = hash.rotate_left(27);
+    hash = hash.wrapping_mul(PRIME_1);
+    hash = hash.wrapping_add(PRIME_4);
+    hash
+}
+
 fn splitmix64(seed: &mut u64) -> u64 {
     *seed = (*seed).wrapping_add(0x9E3779B97F4A7C15);
     let mut z: u64 = seed.clone();
@@ -276,7 +294,8 @@ fn splitmix64(seed: &mut u64) -> u64 {
 }
 
 fn mixsplit(key: u64, seed: u64) -> u64 {
-    murmur64(key + seed)
+    // murmur64(key + seed)
+    xx_hash_64(key, seed)
 }
 
 fn rotl64(n: u64, c: isize) -> u64 {
