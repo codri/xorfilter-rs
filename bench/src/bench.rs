@@ -3,12 +3,9 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use xorfilter::*;
 
 fn bench_xor_contains(c: &mut Criterion) {
-    c.bench_function("contains", |b| {
-        b.iter_with_setup(
-            || Xor8::new((0..1_000).collect::<Vec<u64>>().as_ref()),
-            |xor| xor.contains(124),
-        )
-    });
+    let xor = Xor8::new((0..100_000_000).collect::<Vec<u64>>().as_ref());
+
+    c.bench_function("xor_contains", |b| b.iter(|| xor.contains(402_124)));
 }
 
 criterion_group!(benches, bench_xor_contains);
