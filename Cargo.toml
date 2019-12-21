@@ -1,5 +1,5 @@
 [package]
-name = "xorfilter-rs"
+name = "xorfilter"
 version = "0.1.0"
 authors = ["codri https://github.com/codri"]
 edition = "2018"

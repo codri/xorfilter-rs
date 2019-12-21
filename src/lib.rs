@@ -1,12 +1,12 @@
 #[derive(Default)]
-struct Xor8 {
+pub struct Xor8 {
     seed: u64,
     block_length: usize,
     fingerprints: Vec<u8>,
 }
 
 impl Xor8 {
-    fn new(keys: &[u64]) -> Self {
+    pub fn new(keys: &[u64]) -> Self {
         let size = keys.len();
 
         let mut capacity = 32 + (1.23 * size as f64).ceil() as usize;
@@ -204,7 +204,7 @@ impl Xor8 {
         filter
     }
 
-    fn contains(&self, key: u64) -> bool {
+    pub fn contains(&self, key: u64) -> bool {
         let hash = mixsplit(key, self.seed);
         let f = fingerprint(hash) as u8;
         let r0 = hash as usize;
@@ -313,28 +313,33 @@ fn fingerprint(hash: u64) -> u64 {
     hash ^ (hash >> 32)
 }
 
-#[test]
-fn happy_path() {
-    let xor = Xor8::new((0..10000).collect::<Vec<u64>>().as_ref());
-    assert!(xor.contains(0));
-    assert!(xor.contains(1));
-    assert!(xor.contains(3));
-    assert!(xor.contains(9999));
-    assert!(!xor.contains(10000));
-    assert!(!xor.contains(10001));
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn split_mix_works_as_per_source() {
-    assert_eq!(13679457532755275413, splitmix64(&mut 42));
-}
+    #[test]
+    fn split_mix_works_as_per_source() {
+        assert_eq!(13679457532755275413, splitmix64(&mut 42));
+    }
 
-#[test]
-fn murmur64_works_as_per_source() {
-    assert_eq!(9297814886316923340, murmur64(42));
-}
+    #[test]
+    fn murmur64_works_as_per_source() {
+        assert_eq!(9297814886316923340, murmur64(42));
+    }
 
-#[test]
-fn reduce_works_as_per_source() {
-    assert_eq!(2, reduce(365355135, 101120121201));
+    #[test]
+    fn reduce_works_as_per_source() {
+        assert_eq!(2, reduce(365355135, 101120121201));
+    }
+
+    #[test]
+    fn happy_path() {
+        let xor = Xor8::new((0..10000).collect::<Vec<u64>>().as_ref());
+        assert!(xor.contains(0));
+        assert!(xor.contains(1));
+        assert!(xor.contains(3));
+        assert!(xor.contains(9999));
+        assert!(!xor.contains(10000));
+        assert!(!xor.contains(10001));
+    }
 }
